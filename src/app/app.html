@@ -1,0 +1,78 @@
+<div class="app-container">
+  <!-- Background Decoration -->
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+
+  <header class="glass">
+    <div class="logo">
+      <span class="gradient-text">Type</span>Master
+    </div>
+    <nav>
+      <a href="#" class="nav-link">Latihan</a>
+      <a href="#" class="nav-link">Statistik</a>
+      <a href="#" class="nav-link">Papan Peringkat</a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Landing Hero -->
+    <div class="hero-section" *ngIf="!gameStarted">
+      <h1 class="gradient-text">Kuasai Keyboard Anda</h1>
+      <p>Belajar mengetik 10 jari dengan cara yang menyenangkan, cepat, dan profesional.</p>
+      <div class="hero-actions">
+        <button class="btn-primary" (click)="startGame()">Mulai Latihan</button>
+        <button class="btn-secondary">Lihat Tutorial</button>
+      </div>
+    </div>
+
+    <!-- Typing Game UI -->
+    <div class="typing-container glass" *ngIf="gameStarted">
+      <div class="stats-bar">
+        <div class="stat">
+          <span class="label">Kecepatan</span>
+          <span class="value">{{ wpm }} <small>WPM</small></span>
+        </div>
+        <div class="stat">
+          <span class="label">Akurasi</span>
+          <span class="value">{{ accuracy }}%</span>
+        </div>
+        <div class="stat">
+          <span class="label">Waktu</span>
+          <span class="value">{{ timeLeft }}s</span>
+        </div>
+      </div>
+
+      <div class="text-display-box">
+        <div class="text-display" #textDisplay>
+          <span *ngFor="let char of displayChars; let i = index" 
+                [class.current]="i === currentIndex"
+                [class.correct]="char.status === 'correct'"
+                [class.incorrect]="char.status === 'incorrect'">
+            {{ char.value }}
+          </span>
+        </div>
+      </div>
+
+      <div class="input-wrapper">
+        <input type="text" 
+               #typeInput 
+               class="typing-input" 
+               (input)="onInput($event)"
+               (keydown.backspace)="$event.preventDefault()"
+               autocomplete="off"
+               autofocus>
+        <div class="input-glow"></div>
+      </div>
+      
+      <div class="keyboard-hint" *ngIf="currentIndex < displayChars.length">
+        Tekan <span class="key-highlight">{{ displayChars[currentIndex].value === ' ' ? 'Spasi' : displayChars[currentIndex].value }}</span> untuk melanjutkan
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 TypeMaster Indonesia. Tingkatkan produktivitas Anda.</p>
+  </footer>
+</div>
+
+<router-outlet />
