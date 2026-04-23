@@ -5,17 +5,17 @@
       Kembali
     </button>
     <div class="level-indicator">
-      <span class="level-title">Belajar - Level 3</span>
+      <span class="level-title">Belajar - Level {{ currentLevel }}</span>
       <div class="steps">
-        <div class="step completed">1</div>
+        <div class="step" [class.active]="currentStep === 1" [class.completed]="currentStep > 1">1</div>
         <div class="step-line"></div>
-        <div class="step completed">2</div>
+        <div class="step" [class.active]="currentStep === 2" [class.completed]="currentStep > 2">2</div>
         <div class="step-line"></div>
-        <div class="step active">3</div>
+        <div class="step" [class.active]="currentStep === 3" [class.completed]="currentStep > 3">3</div>
         <div class="step-line"></div>
-        <div class="step">4</div>
+        <div class="step" [class.active]="currentStep === 4" [class.completed]="currentStep > 4">4</div>
         <div class="step-line"></div>
-        <div class="step">5</div>
+        <div class="step" [class.active]="currentStep === 5" [class.completed]="currentStep > 5">5</div>
       </div>
     </div>
     <button class="btn-exit">
@@ -26,49 +26,76 @@
 
   <main class="practice-area">
     <div class="instruction">
-      <h2>Latihan: Huruf S dan L</h2>
-      <p>Ketik huruf berikut:</p>
+      <h2>Tombol baru: Baris dasar</h2>
+      <p>Ketik huruf yang menyala hijau di keyboard</p>
     </div>
 
-    <div class="char-focus-row">
-      <div class="char-box active">S</div>
-      <div class="char-box">s</div>
-      <div class="char-box">s</div>
-      <div class="char-box">l</div>
-      <div class="char-box">l</div>
-      <div class="char-box">s</div>
-      <div class="char-box">l</div>
-      <div class="char-box">s</div>
-      <div class="char-box">l</div>
+    <div class="char-display-wrapper">
+      <div class="char-focus-row">
+        <div *ngFor="let item of targetChars; let i = index" 
+             class="char-box" 
+             [class.active]="i === currentIndex"
+             [class.correct]="item.status === 'correct'"
+             [class.incorrect]="item.status === 'incorrect'">
+          <span *ngIf="item.char !== ' '">{{ item.char }}</span>
+          <span *ngIf="item.char === ' '" class="space-symbol">␣</span>
+        </div>
+      </div>
     </div>
 
     <div class="visual-guide">
       <!-- Left Hand -->
       <div class="hand left-hand">
-        <svg width="120" height="150" viewBox="0 0 100 120" class="hand-svg">
-          <path d="M10 100 Q 10 50 20 40 T 30 20 T 40 40 T 50 15 T 60 40 T 70 30 T 80 60 L 90 110" fill="none" stroke="#64748b" stroke-width="2"/>
-          <circle cx="45" cy="18" r="4" fill="#818cf8" class="finger-active"/> <!-- Ring finger for S -->
+        <svg width="160" height="200" viewBox="0 0 120 150" class="hand-svg-solid">
+          <path d="M25,145 C15,130 5,110 5,85 C5,70 8,60 12,50 C15,42 22,42 24,50 C24,65 26,75 26,85 C26,70 28,50 28,35 C28,22 36,22 36,35 C36,55 38,75 38,90 C38,70 42,45 42,25 C42,12 52,12 52,25 C52,50 54,75 54,95 C54,75 58,50 58,30 C58,15 68,15 68,30 C68,55 72,80 72,100 C72,85 75,75 80,75 C85,75 95,85 100,100 C105,115 105,140 100,145 L 25,145 Z" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.5"/>
+          <circle *ngIf="getActiveHand() === 'left' && getActiveFinger() === 0" cx="13" cy="52" r="7" fill="#00ff00" class="active-dot"/>
+          <circle *ngIf="getActiveHand() === 'left' && getActiveFinger() === 1" cx="32" cy="35" r="7" fill="#00ff00" class="active-dot"/>
+          <circle *ngIf="getActiveHand() === 'left' && getActiveFinger() === 2" cx="47" cy="25" r="7" fill="#00ff00" class="active-dot"/>
+          <circle *ngIf="getActiveHand() === 'left' && getActiveFinger() === 3" cx="63" cy="30" r="7" fill="#00ff00" class="active-dot"/>
+          <circle *ngIf="getActiveHand() === 'left' && getActiveFinger() === 4" cx="90" cy="85" r="7" fill="#00ff00" class="active-dot"/>
         </svg>
       </div>
 
       <!-- Virtual Keyboard -->
-      <div class="virtual-keyboard">
+      <div class="keyboard-container-white">
         <div class="kbd-row">
-          <div class="key">Q</div><div class="key">W</div><div class="key">E</div><div class="key">R</div><div class="key">T</div><div class="key">Y</div><div class="key">U</div><div class="key">I</div><div class="key">O</div><div class="key">P</div>
+          <div class="key-w tiny">~</div><div class="key-w">1</div><div class="key-w">2</div><div class="key-w">3</div><div class="key-w">4</div><div class="key-w">5</div><div class="key-w">6</div><div class="key-w">7</div><div class="key-w">8</div><div class="key-w">9</div><div class="key-w">0</div><div class="key-w">-</div><div class="key-w">=</div><div class="key-w wide">Back</div>
         </div>
         <div class="kbd-row">
-          <div class="key">A</div><div class="key highlighted">S</div><div class="key">D</div><div class="key">F</div><div class="key">G</div><div class="key">H</div><div class="key">J</div><div class="key">K</div><div class="key highlighted secondary">L</div><div class="key">;</div>
+          <div class="key-w wide">Tab</div><div class="key-w">q</div><div class="key-w">w</div><div class="key-w">e</div><div class="key-w">r</div><div class="key-w">t</div><div class="key-w">y</div><div class="key-w">u</div><div class="key-w">i</div><div class="key-w">o</div><div class="key-w">p</div><div class="key-w">[</div><div class="key-w">]</div><div class="key-w">\</div>
         </div>
         <div class="kbd-row">
-          <div class="key">Z</div><div class="key">X</div><div class="key">C</div><div class="key">V</div><div class="key">B</div><div class="key">N</div><div class="key">M</div><div class="key">,</div><div class="key">.</div><div class="key">/</div>
+          <div class="key-w wide">Caps</div>
+          <div class="key-w" [class.key-highlight]="getCurrentChar().toLowerCase() === 'a'">a</div>
+          <div class="key-w" [class.key-highlight]="getCurrentChar().toLowerCase() === 's'">s</div>
+          <div class="key-w" [class.key-highlight]="getCurrentChar().toLowerCase() === 'd'">d</div>
+          <div class="key-w" [class.key-highlight]="getCurrentChar().toLowerCase() === 'f'">f</div>
+          <div class="key-w">g</div><div class="key-w">h</div>
+          <div class="key-w" [class.key-highlight]="getCurrentChar().toLowerCase() === 'j'">j</div>
+          <div class="key-w" [class.key-highlight]="getCurrentChar().toLowerCase() === 'k'">k</div>
+          <div class="key-w" [class.key-highlight]="getCurrentChar().toLowerCase() === 'l'">l</div>
+          <div class="key-w" [class.key-highlight]="getCurrentChar().toLowerCase() === ';'">;</div>
+          <div class="key-w">'</div><div class="key-w extra-wide">Enter</div>
+        </div>
+        <div class="kbd-row">
+          <div class="key-w extra-wide">Shift</div><div class="key-w">z</div><div class="key-w">x</div><div class="key-w">c</div><div class="key-w">v</div><div class="key-w">b</div><div class="key-w">n</div><div class="key-w">m</div><div class="key-w"><</div><div class="key-w">></div><div class="key-w">?</div><div class="key-w extra-wide">Shift</div>
+        </div>
+        <div class="kbd-row">
+          <div class="key-w medium">Ctrl</div><div class="key-w medium">Alt</div>
+          <div class="key-w space-bar-w" [class.key-highlight]="getCurrentChar() === ' '"></div>
+          <div class="key-w medium">AltGr</div><div class="key-w medium">Ctrl</div>
         </div>
       </div>
 
       <!-- Right Hand -->
       <div class="hand right-hand">
-        <svg width="120" height="150" viewBox="0 0 100 120" class="hand-svg hand-mirror">
-          <path d="M10 100 Q 10 50 20 40 T 30 20 T 40 40 T 50 15 T 60 40 T 70 30 T 80 60 L 90 110" fill="none" stroke="#64748b" stroke-width="2"/>
-          <circle cx="45" cy="18" r="4" fill="#a78bfa" class="finger-hint"/> <!-- Ring finger for L -->
+        <svg width="160" height="200" viewBox="0 0 120 150" class="hand-svg-solid hand-mirror">
+          <path d="M25,145 C15,130 5,110 5,85 C5,70 8,60 12,50 C15,42 22,42 24,50 C24,65 26,75 26,85 C26,70 28,50 28,35 C28,22 36,22 36,35 C36,55 38,75 38,90 C38,70 42,45 42,25 C42,12 52,12 52,25 C52,50 54,75 54,95 C54,75 58,50 58,30 C58,15 68,15 68,30 C68,55 72,80 72,100 C72,85 75,75 80,75 C85,75 95,85 100,100 C105,115 105,140 100,145 L 25,145 Z" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.5"/>
+          <circle *ngIf="getActiveHand() === 'right' && getActiveFinger() === 0" cx="13" cy="52" r="7" fill="#00ff00" class="active-dot"/>
+          <circle *ngIf="getActiveHand() === 'right' && getActiveFinger() === 1" cx="32" cy="35" r="7" fill="#00ff00" class="active-dot"/>
+          <circle *ngIf="getActiveHand() === 'right' && getActiveFinger() === 2" cx="47" cy="25" r="7" fill="#00ff00" class="active-dot"/>
+          <circle *ngIf="getActiveHand() === 'right' && getActiveFinger() === 3" cx="63" cy="30" r="7" fill="#00ff00" class="active-dot"/>
+          <circle *ngIf="getActiveHand() === 'right' && getActiveFinger() === 4" cx="90" cy="85" r="7" fill="#00ff00" class="active-dot"/>
         </svg>
       </div>
     </div>
@@ -77,22 +104,22 @@
   <footer class="practice-footer">
     <div class="practice-stats">
       <div class="p-stat">
-        <span class="p-label">Waktu</span>
-        <span class="p-value">01:25</span>
-      </div>
-      <div class="p-stat">
         <span class="p-label">Akurasi</span>
-        <span class="p-value">96%</span>
+        <span class="p-value">{{ accuracy }}%</span>
       </div>
       <div class="p-stat">
         <span class="p-label">Kesalahan</span>
-        <span class="p-value">2</span>
+        <span class="p-value">{{ errorCount }}</span>
       </div>
       <div class="p-progress-container">
-        <div class="p-label">Progress: 12 / 20</div>
-        <div class="p-bar"><div class="p-fill" style="width: 60%"></div></div>
+        <div class="p-label">Progres: {{ currentIndex }} / {{ targetChars.length }}</div>
+        <div class="p-bar"><div class="p-fill" [style.width.%]="progress"></div></div>
       </div>
     </div>
+    <button *ngIf="currentIndex === targetChars.length" class="btn-hint" (click)="reset()" style="background: #10b981; color: white;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"></path><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+      Ulangi Latihan
+    </button>
     <button class="btn-hint">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
       Petunjuk
